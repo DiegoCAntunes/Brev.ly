@@ -1,6 +1,4 @@
 import { env } from '@/env'
-import { createLinkRoute } from '@/infra/http/routes/create-links'
-import { getLinksRoute } from '@/infra/http/routes/get-links'
 import { fastifyCors } from '@fastify/cors'
 import fastifyMultipart from '@fastify/multipart'
 import { fastifySwagger } from '@fastify/swagger'
@@ -12,6 +10,10 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from 'fastify-type-provider-zod'
+
+import { createLinkRoute } from '@/infra/http/routes/create-links'
+import { getLinksRoute } from '@/infra/http/routes/get-links'
+import { deleteLinkRoute } from './routes/delete-link'
 
 const server = fastify()
 
@@ -49,7 +51,8 @@ server.register(fastifySwaggerUi, {
 
 server.register(createLinkRoute)
 server.register(getLinksRoute)
+server.register(deleteLinkRoute)
 
-server.listen({ port: env.PORT, host: '0.0.0.0' }).then(() => {
+server.listen({ port: 3333, host: '0.0.0.0' }).then(() => {
   console.log('HTTP Server running!')
 })

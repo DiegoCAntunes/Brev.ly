@@ -9,7 +9,7 @@ const deleteLinkInput = z.object({
 })
 
 type DeleteLinkInput = z.input<typeof deleteLinkInput>
-type DeleteLinkOutput = void
+type DeleteLinkOutput = true
 type DeleteLinkError = 'LINK_NOT_FOUND'
 
 export async function deleteLink(
@@ -17,14 +17,17 @@ export async function deleteLink(
 ): Promise<Either<DeleteLinkError, DeleteLinkOutput>> {
   const { id } = deleteLinkInput.parse(input)
 
-  const [link] = await db
-    .delete(schema.links)
-    .where(eq(schema.links.id, id))
-    .returning()
+  // Step 1: Check if the link exists
+  const link = await db.query.links.findFirst({
+    where: eq(schema.links.id, id),
+  })
 
   if (!link) {
     return makeLeft('LINK_NOT_FOUND')
   }
 
-  return makeRight(undefined)
+  // Step 2: Delete the link
+  await db.delete(schema.links).where(eq(schema.links.id, id))
+
+  return makeRight(true)
 }

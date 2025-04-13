@@ -2,14 +2,11 @@ import { db } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
 import { type Either, makeLeft, makeRight } from '@/infra/shared/either'
 import { eq } from 'drizzle-orm'
-import { z } from 'zod'
 
-const createLinkInput = z.object({
-  originalUrl: z.string().url(),
-  shortenedUrl: z.string().regex(/^[a-zA-Z0-9_-]*$/).optional(),
-})
-
-type CreateLinkInput = z.input<typeof createLinkInput>
+type CreateLinkInput = {
+  originalUrl: string
+  shortenedUrl: string
+}
 
 type CreateLinkOutput = {
   id: string
@@ -21,17 +18,11 @@ type CreateLinkOutput = {
 
 export async function createLink(
   input: CreateLinkInput
-): Promise<Either<'SHORTENED_URL_EXISTS' | 'SHORTENED_URL_REQUIRED', CreateLinkOutput>> {
-  const { originalUrl, shortenedUrl } = createLinkInput.parse(input)
+): Promise<Either<'SHORTENED_URL_EXISTS', CreateLinkOutput>> {
+  const { originalUrl, shortenedUrl } = input
 
-  if (!shortenedUrl) {
-    return makeLeft('SHORTENED_URL_REQUIRED');
-  }
-  const shortUrl = shortenedUrl;
-
-  // Check if shortened URL already exists
   const existingLink = await db.query.links.findFirst({
-    where: eq(schema.links.shortenedUrl, shortUrl),
+    where: eq(schema.links.shortenedUrl, shortenedUrl),
   })
 
   if (existingLink) {
@@ -42,7 +33,7 @@ export async function createLink(
     .insert(schema.links)
     .values({
       originalUrl,
-      shortenedUrl: shortUrl,
+      shortenedUrl,
       accessCount: 0,
     })
     .returning()
