@@ -1,17 +1,14 @@
 import { env } from '@/env'
 import { createLinkRoute } from '@/infra/http/routes/create-links'
-import { deleteLinkRoute } from '@/infra/http/routes/delete-link'
-import { exportLinksRoute } from '@/infra/http/routes/export-links'
 import { getLinksRoute } from '@/infra/http/routes/get-links'
-import { incrementAccessRoute } from '@/infra/http/routes/increment-access'
-import { redirectRoute } from '@/infra/http/routes/redirect'
-import { transformSwaggerSchema } from '@/infra/http/transform-swagger-schema'
 import { fastifyCors } from '@fastify/cors'
+import fastifyMultipart from '@fastify/multipart'
 import { fastifySwagger } from '@fastify/swagger'
 import { fastifySwaggerUi } from '@fastify/swagger-ui'
 import { fastify } from 'fastify'
 import {
   hasZodFastifySchemaValidationErrors,
+  jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
 } from 'fastify-type-provider-zod'
@@ -35,14 +32,15 @@ server.setErrorHandler((error, request, reply) => {
 
 server.register(fastifyCors, { origin: '*' })
 
+server.register(fastifyMultipart)
 server.register(fastifySwagger, {
   openapi: {
     info: {
-      title: 'Brev.iy URL Shortener',
+      title: 'Brev.ly URL Shortener',
       version: '1.0.0',
     },
   },
-  transform: transformSwaggerSchema,
+  transform: jsonSchemaTransform,
 })
 
 server.register(fastifySwaggerUi, {
@@ -51,10 +49,6 @@ server.register(fastifySwaggerUi, {
 
 server.register(createLinkRoute)
 server.register(getLinksRoute)
-//server.register(deleteLinkRoute)
-//server.register(redirectRoute)
-//server.register(incrementAccessRoute)
-//server.register(exportLinksRoute)
 
 server.listen({ port: env.PORT, host: '0.0.0.0' }).then(() => {
   console.log('HTTP Server running!')
