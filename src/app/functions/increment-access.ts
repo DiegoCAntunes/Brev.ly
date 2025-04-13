@@ -1,7 +1,7 @@
 import { db } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
 import { type Either, makeLeft, makeRight } from '@/infra/shared/either'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 const incrementAccessInput = z.object({
@@ -9,7 +9,7 @@ const incrementAccessInput = z.object({
 })
 
 type IncrementAccessInput = z.input<typeof incrementAccessInput>
-type IncrementAccessOutput = void
+type IncrementAccessOutput = { updatedCount: number, originalUrl: string }
 type IncrementAccessError = 'SHORTENED_URL_NOT_FOUND'
 
 export async function incrementAccess(
@@ -30,5 +30,5 @@ export async function incrementAccess(
     return makeLeft('SHORTENED_URL_NOT_FOUND')
   }
 
-  return makeRight(undefined)
+  return makeRight({ updatedCount: link.accessCount, originalUrl: link.originalUrl })
 }

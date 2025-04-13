@@ -9,15 +9,16 @@ export const deleteLinkRoute: FastifyPluginAsyncZod = async server => {
     {
       schema: {
         summary: 'Delete a shortened URL',
+        description: 'Deletes a shortened URL. Returns 204 if successful or 404 if not found.',
         tags: ['links'],
         params: z.object({
-          id: z.string().uuid(),
+          id: z.string().uuid().describe('The UUID of the link to delete'),
         }),
         response: {
-          204: z.void(),
+          204: z.void().describe('Link successfully deleted. No content returned.'),
           404: z.object({
-            message: z.string(),
-          }),
+            message: z.string().describe('No link found with the provided ID'),
+          }).describe('Link does not exist'),
         },
       },
     },
