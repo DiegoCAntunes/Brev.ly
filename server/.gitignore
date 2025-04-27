@@ -1,0 +1,18 @@
+node_modules
+
+//complete my gitignore file
+dist
+.DS_Store
+.env
+coverage
+*.log
+*.lock
+*.tmp
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+*.sublime-settings    
+*.sublime-metrics
+*.sublime-gulp
+*.sublime-gulp-cache
