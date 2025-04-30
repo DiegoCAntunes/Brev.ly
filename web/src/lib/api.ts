@@ -14,8 +14,25 @@ export async function apiPost<T>(path: string, body: any): Promise<T> {
     },
     body: JSON.stringify(body),
   });
+
+  const json = await response.json();
+
   if (!response.ok) {
-    throw new Error("Failed to fetch");
+    // Attach parsed error body to the thrown error
+    const error = new Error("API error");
+    (error as any).body = json;
+    throw error;
+  }
+
+  return json;
+}
+
+export async function apiDelete<T>(path: string): Promise<T> {
+  const response = await fetch(`http://localhost:3333${path}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to delete");
   }
   return response.json();
 }

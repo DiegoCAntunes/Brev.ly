@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch --env-file .env src/infra/http/server.ts",
-    "start": "node dist/server.mjs",
+    "start": "node dist/server.js",
     "build": "tsup src/infra/http/server.ts --format esm --external json2csv",
     "test": "dotenv -e .env.test -- vitest run",
     "test:watch": "dotenv -e .env.test -- vitest",

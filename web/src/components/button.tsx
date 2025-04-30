@@ -5,9 +5,10 @@ type IconType = "trash" | "copy" | "download";
 
 interface ButtonProps {
   icon: IconType;
-  label: string;
+  label?: string;
   disabled?: boolean;
   onClick?: () => void;
+  id?: string; // optional identifier if needed
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -27,7 +28,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
       onClick={onClick}
       className={`
-        flex items-center gap-2 px-4 py-2 rounded-md border
+        flex items-center ${label ? "gap-2" : ""} px-4 py-2 rounded-md border
         transition-all duration-200
         ${
           disabled
@@ -37,7 +38,7 @@ export const Button: React.FC<ButtonProps> = ({
       `}
     >
       <Icon className="w-4 h-4" />
-      <span>{label}</span>
+      {label && <span>{label}</span>}
     </button>
   );
 };
