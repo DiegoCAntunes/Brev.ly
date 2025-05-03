@@ -45,11 +45,7 @@ export function App() {
         <img src="/Logo.svg" alt="logo" className="h-8 mb-6" />
         <div className="flex flex-col md:flex-row gap-4 w-full justify-center items-center md:items-start">
           <CreateLink onLinkCreated={triggerRefresh} />
-          <MyLinks
-            links={links}
-            setLinks={setLinks}
-            triggerRefresh={triggerRefresh}
-          />
+          <MyLinks links={links} triggerRefresh={triggerRefresh} />
         </div>
       </div>
     </main>

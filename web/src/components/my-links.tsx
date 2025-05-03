@@ -5,19 +5,36 @@ import { apiDelete } from "../lib/api";
 
 export const MyLinks = ({
   links,
-  setLinks,
   triggerRefresh,
 }: {
   links: Link[];
-  setLinks: React.Dispatch<React.SetStateAction<Link[]>>;
   triggerRefresh: () => void;
 }) => {
   const handleDelete = async (id: string) => {
+    if (!id) return;
     try {
       await apiDelete(`/links/${id}`);
       triggerRefresh();
     } catch (error) {
       console.error("Failed to delete link", error);
+    }
+  };
+
+  const handleLinkClick = async (shortenedUrl: string) => {
+    try {
+      const res = await fetch(`http://localhost:3333/links/${shortenedUrl}`, {
+        method: "POST",
+      });
+
+      const data: { originalUrl?: string } = await res.json();
+      if (res.ok && data.originalUrl) {
+        window.open(data.originalUrl, "_blank");
+        triggerRefresh();
+      } else {
+        console.error("Failed to resolve shortened URL:", data);
+      }
+    } catch (err) {
+      console.error("Error accessing shortened URL", err);
     }
   };
 
@@ -39,30 +56,28 @@ export const MyLinks = ({
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {links.map((link) => (
+          {links.map(({ id, shortenedUrl, originalUrl, accessCount }) => (
             <div
-              key={link.id}
+              key={id}
               className="flex items-center justify-between bg-gray-50 p-3 rounded-md"
             >
               <div className="flex flex-col">
-                <a
-                  href={link.shortenedUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-700 font-medium hover:underline"
+                <span
+                  onClick={() => handleLinkClick(shortenedUrl)}
+                  className="text-blue-700 font-medium hover:underline cursor-pointer"
                 >
-                  {link.shortenedUrl}
-                </a>
+                  {shortenedUrl}
+                </span>
                 <p className="text-sm text-gray-500 truncate max-w-xs">
-                  {link.originalUrl}
+                  {originalUrl}
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-600">
-                  {link.accessCount} acessos
+                  {accessCount} acessos
                 </span>
                 <Button icon="copy" label={""} />
-                <Button icon="trash" onClick={() => handleDelete(link.id)} />
+                <Button icon="trash" onClick={() => handleDelete(id)} />
               </div>
             </div>
           ))}

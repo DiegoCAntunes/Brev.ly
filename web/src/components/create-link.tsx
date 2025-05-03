@@ -11,30 +11,20 @@ export const CreateLink = ({
   const [shortenedUrl, setShortenedUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showUrlError, setShowUrlError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Reset any previous error
-    if (
-      !originalUrl.startsWith("http://") &&
-      !originalUrl.startsWith("https://")
-    ) {
-      setShowUrlError(true);
-      return;
-    }
-    setShowUrlError(false);
+    setError(null);
     setLoading(true);
+    const urlLink = "https://" + originalUrl;
 
     try {
-      const response = await apiPost("/links", { originalUrl, shortenedUrl });
-      // Handle successful link creation, e.g., display a success message or reset form
+      const response = await apiPost("/links", { urlLink, shortenedUrl });
       console.log("Link created:", response);
-      // Optionally reset the form after successful creation
       setOriginalUrl("");
       setShortenedUrl("");
       if (onLinkCreated) {
-        onLinkCreated(response as Link); // Cast response to Link type
+        onLinkCreated(response as Link);
       }
     } catch (error: any) {
       const errorBody = error?.body;
@@ -61,15 +51,12 @@ export const CreateLink = ({
           <div className="flex items-center">
             <input
               type="text"
-              placeholder="https://www.exemplo.com.br"
+              placeholder="www.exemplo.com.br"
               className="flex-1 p-2 border border-gray-300 rounded-md text-sm"
               value={originalUrl}
               onChange={(e) => setOriginalUrl(e.target.value)}
             />
           </div>
-          {showUrlError && (
-            <p className="text-xs text-red-500 mt-1">Coloque http ou https</p>
-          )}
         </div>
 
         <div className="mb-4">
