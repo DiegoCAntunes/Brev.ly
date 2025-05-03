@@ -4,13 +4,13 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 export const incrementAccessRoute: FastifyPluginAsyncZod = async (server) => {
-  server.post(
+  server.get(
     "/links/:shortenedUrl",
     {
       schema: {
-        summary: "Increment access count for a shortened URL",
+        summary: "Get and increment access count for a shortened URL",
         description:
-          "Increments the access count and returns the original URL for redirection.",
+          "Fetches the original URL and increments the access count. Used for client-side redirection.",
         tags: ["links"],
         params: z.object({
           shortenedUrl: z
@@ -25,9 +25,7 @@ export const incrementAccessRoute: FastifyPluginAsyncZod = async (server) => {
                 .url()
                 .describe("The original long URL for redirection"),
             })
-            .describe(
-              "Returns the original URL after incrementing access count"
-            ),
+            .describe("Returns the original URL"),
           404: z
             .object({
               message: z

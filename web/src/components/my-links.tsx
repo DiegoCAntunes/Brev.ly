@@ -6,35 +6,36 @@ import { apiDelete } from "../lib/api";
 export const MyLinks = ({
   links,
   triggerRefresh,
+  showAlert,
 }: {
   links: Link[];
   triggerRefresh: () => void;
+  showAlert: (message: string, severity?: "success" | "error") => void;
 }) => {
   const handleDelete = async (id: string) => {
     if (!id) return;
     try {
       await apiDelete(`/links/${id}`);
       triggerRefresh();
+      showAlert("Link deletado com sucesso", "success");
     } catch (error) {
       console.error("Failed to delete link", error);
+      showAlert("Erro ao deletar o link", "error");
     }
   };
 
-  const handleLinkClick = async (shortenedUrl: string) => {
-    try {
-      const res = await fetch(`http://localhost:3333/links/${shortenedUrl}`, {
-        method: "POST",
-      });
+  const handleLinkClick = (shortenedUrl: string) => {
+    const url = `${window.location.origin}/${shortenedUrl}`;
+    window.open(url, "_blank");
+  };
 
-      const data: { originalUrl?: string } = await res.json();
-      if (res.ok && data.originalUrl) {
-        window.open(data.originalUrl, "_blank");
-        triggerRefresh();
-      } else {
-        console.error("Failed to resolve shortened URL:", data);
-      }
+  const handleCopy = async (originalUrl: string) => {
+    try {
+      await navigator.clipboard.writeText(originalUrl);
+      showAlert("Link copiado para a área de transferência", "success");
     } catch (err) {
-      console.error("Error accessing shortened URL", err);
+      console.error("Failed to copy link", err);
+      showAlert("Erro ao copiar o link", "error");
     }
   };
 
@@ -76,7 +77,11 @@ export const MyLinks = ({
                 <span className="text-sm text-gray-600">
                   {accessCount} acessos
                 </span>
-                <Button icon="copy" label={""} />
+                <Button
+                  icon="copy"
+                  label={""}
+                  onClick={() => handleCopy(originalUrl)}
+                />
                 <Button icon="trash" onClick={() => handleDelete(id)} />
               </div>
             </div>

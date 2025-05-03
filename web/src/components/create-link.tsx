@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { apiPost } from "../lib/api"; // Adjust the import based on your file structure
 import type { Link } from "../types";
+import { TriangleAlert } from "lucide-react";
 
 export const CreateLink = ({
   onLinkCreated,
+  showAlert,
 }: {
   onLinkCreated?: (link: Link) => void;
+  showAlert: (message: string, severity?: "success" | "error") => void;
 }) => {
   const [originalUrl, setOriginalUrl] = useState("");
   const [shortenedUrl, setShortenedUrl] = useState("");
@@ -16,16 +19,36 @@ export const CreateLink = ({
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    const urlPattern =
+      /^(?:https?:\/\/)?[\w-]+(\.[\w-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
+    if (!urlPattern.test(originalUrl)) {
+      setError("invalid-url");
+      setLoading(false);
+      return;
+    }
+
+    const shortUrlPattern = /^[a-z0-9-]+$/;
+    if (!shortUrlPattern.test(shortenedUrl)) {
+      setError("invalid-shorturl");
+      setLoading(false);
+      return;
+    }
+
     const urlLink = "https://" + originalUrl;
 
     try {
-      const response = await apiPost("/links", { urlLink, shortenedUrl });
+      const response = await apiPost("/links", {
+        originalUrl: urlLink,
+        shortenedUrl,
+      });
       console.log("Link created:", response);
       setOriginalUrl("");
       setShortenedUrl("");
       if (onLinkCreated) {
         onLinkCreated(response as Link);
       }
+      showAlert("Link criado com sucesso!", "success");
     } catch (error: any) {
       const errorBody = error?.body;
       const message =
@@ -33,6 +56,7 @@ export const CreateLink = ({
         errorBody?.message ||
         "Failed to create link. Please try again.";
       setError(message);
+      showAlert(message, "error");
       console.error("Error creating link:", errorBody);
     } finally {
       setLoading(false);
@@ -54,9 +78,20 @@ export const CreateLink = ({
               placeholder="www.exemplo.com.br"
               className="flex-1 p-2 border border-gray-300 rounded-md text-sm"
               value={originalUrl}
-              onChange={(e) => setOriginalUrl(e.target.value)}
+              onChange={(e) => {
+                setOriginalUrl(e.target.value);
+                if (error === "invalid-url") {
+                  setError(null); // Clear error when input changes
+                }
+              }}
             />
           </div>
+          {error === "invalid-url" && (
+            <div className="flex items-center text-xs mt-1 text-gray-500">
+              <TriangleAlert className="w-3 h-3 mr-1 text-red-500" />
+              Link inválido
+            </div>
+          )}
         </div>
 
         <div className="mb-4">
@@ -69,12 +104,25 @@ export const CreateLink = ({
               placeholder="brev.ly/"
               className="flex-1 p-2 border border-gray-300 rounded-md text-sm"
               value={shortenedUrl}
-              onChange={(e) => setShortenedUrl(e.target.value)}
+              onChange={(e) => {
+                setShortenedUrl(e.target.value);
+                if (error === "invalid-shorturl") {
+                  setError(null); // Clear error when input changes
+                }
+              }}
             />
           </div>
+          {error === "invalid-shorturl" && (
+            <div className="flex items-center text-xs mt-1 text-gray-500">
+              <TriangleAlert className="w-3 h-3 mr-1 text-red-500" />
+              Informe url minúscula e sem espaço/caracteres especiais
+            </div>
+          )}
         </div>
 
-        {error && <p className="text-red-500 text-xs mb-4">{error}</p>}
+        {error && error !== "invalid-url" && error !== "invalid-shorturl" && (
+          <p className="text-red-500 text-xs mb-4">{error}</p>
+        )}
 
         <button
           type="submit"
