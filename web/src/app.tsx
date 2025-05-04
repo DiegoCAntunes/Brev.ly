@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import { CreateLink } from "./components/create-link";
-import { MyLinks } from "./components/my-links";
 import { apiGet } from "./lib/api";
 import type { Link } from "./types";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RedirectPage } from "./pages/RedirectPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { MainPage } from "./pages/MainPage";
 
 export function App() {
   const [links, setLinks] = useState<Link[]>([]);
@@ -67,22 +66,11 @@ export function App() {
         <Route
           path="/"
           element={
-            <main className="min-h-screen bg-gray-100 font-sans p-4 md:p-8 md:flex md:items-center md:justify-center">
-              <div className="w-full max-w-6xl flex flex-col items-center gap-4 md:-translate-y-24">
-                <img src="/Logo.svg" alt="logo" className="h-8 mb-6" />
-                <div className="flex flex-col md:flex-row gap-4 w-full justify-center items-center md:items-start">
-                  <CreateLink
-                    onLinkCreated={triggerRefresh}
-                    showAlert={showAlert}
-                  />
-                  <MyLinks
-                    links={links}
-                    triggerRefresh={triggerRefresh}
-                    showAlert={showAlert}
-                  />
-                </div>
-              </div>
-            </main>
+            <MainPage
+              links={links}
+              triggerRefresh={triggerRefresh}
+              showAlert={showAlert}
+            />
           }
         />
         <Route

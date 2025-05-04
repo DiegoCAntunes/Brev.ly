@@ -14,13 +14,14 @@ export function RedirectPage({ showAlert }: Props) {
   useEffect(() => {
     if (didRedirect.current) return;
 
+    didRedirect.current = true;
+
     async function fetchAndRedirect() {
       try {
         const data = await apiGet<{ originalUrl: string }>(
           `/links/${shortUrl}`
         );
         if (data?.originalUrl) {
-          didRedirect.current = true;
           window.location.href = data.originalUrl;
         } else {
           showAlert("Short URL not found", "error");
