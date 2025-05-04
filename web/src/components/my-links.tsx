@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { Button } from "./button";
 import { Link as LinkIcon } from "lucide-react";
 import type { Link } from "../types";
-import { apiDelete } from "../lib/api";
+import { apiDelete, apiGet } from "../lib/api";
 
 export const MyLinks = ({
   links,
@@ -12,6 +13,8 @@ export const MyLinks = ({
   triggerRefresh: () => void;
   showAlert: (message: string, severity?: "success" | "error") => void;
 }) => {
+  const [isExporting, setIsExporting] = useState(false);
+
   const handleDelete = async (id: string) => {
     if (!id) return;
     try {
@@ -39,11 +42,29 @@ export const MyLinks = ({
     }
   };
 
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+      const data = await apiGet<{ url: string }>("/links/export");
+      window.open(data.url, "_blank");
+      showAlert("Exportação iniciada com sucesso", "success");
+    } catch (error) {
+      console.error("Failed to export links", error);
+      showAlert("Erro ao exportar os links", "error");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold">Meus links</h2>
-        <Button icon="download" label="Baixar CSV" />
+        <Button
+          icon={isExporting ? "spinner" : "download"}
+          label="Baixar CSV"
+          onClick={handleExport}
+        />
       </div>
 
       <div className="border-t border-gray-200 my-4" />

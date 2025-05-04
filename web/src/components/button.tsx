@@ -1,7 +1,7 @@
 import React from "react";
-import { Trash2, Copy, Download } from "lucide-react";
+import { Trash2, Copy, Download, Loader2 } from "lucide-react";
 
-type IconType = "trash" | "copy" | "download";
+type IconType = "trash" | "copy" | "download" | "spinner";
 
 interface ButtonProps {
   icon: IconType;
@@ -21,6 +21,7 @@ export const Button: React.FC<ButtonProps> = ({
     trash: Trash2,
     copy: Copy,
     download: Download,
+    spinner: Loader2,
   }[icon];
 
   return (
@@ -37,7 +38,7 @@ export const Button: React.FC<ButtonProps> = ({
         }
       `}
     >
-      <Icon className="w-4 h-4" />
+      <Icon className={`w-4 h-4 ${icon === "spinner" ? "animate-spin" : ""}`} />
       {label && <span>{label}</span>}
     </button>
   );
