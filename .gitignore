@@ -1,0 +1,32 @@
+# Ignore node_modules for both apps
+**/node_modules
+
+# Ignore logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Env files
+**/.env
+
+# Vite cache
+**/.vite
+
+# dist/build output (in case you build assets)
+**/dist
+**/build
+
+# TypeScript cache
+**/tsconfig.tsbuildinfo
+
+# Docker
+**/docker-volume/
+
+# IDE settings
+.vscode
+.idea
+*.sw?
