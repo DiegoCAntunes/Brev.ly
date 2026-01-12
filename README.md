@@ -2,18 +2,18 @@
 
 **Brevly** is a modern, fullstack **link shortener**. It provides:
 
-- ✨ Custom short links  
-- 📊 Link analytics and usage tracking  
-- 📤 CSV export for easy reporting  
+- Custom short links  
+- Link analytics and usage tracking  
+- CSV export for easy reporting  
 ---
 
 ## 🚀 Features
 
-- 🔗 **Custom Slugs** – Create branded short links (e.g., `brev.ly/launch2025`)  
-- 📈 **Real-Time Analytics** – Track views 
-- 📤 **CSV Export** – Export link performance data on demand  
-- 🧰 **REST API** – Full API for managing links programmatically  
-- 🖥️ **Frontend UI** – Clean and responsive React + Vite interface  
+- **Custom Slugs** – Create branded short links (e.g., `brev.ly/launch2025`)  
+- **Real-Time Analytics** – Track views 
+- **CSV Export** – Export link performance data on demand  
+- **REST API** – Full API for managing links programmatically  
+- **Frontend UI** – Clean and responsive React + Vite interface  
 
 ---
 
